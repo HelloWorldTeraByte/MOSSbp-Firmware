@@ -95,7 +95,7 @@
 #define E1_DIR_PIN         P2_13   // (34)
 #define E1_ENABLE_PIN      P4_29   // (30)
 #ifndef E1_CS_PIN
-  #define E1_CS_PIN        -1
+  #define E1_CS_PIN        P1_15
 #endif
 
 //
