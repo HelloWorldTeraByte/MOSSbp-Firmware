@@ -45,6 +45,10 @@
   void move_extruder_servo(const uint8_t e);
 #endif
 
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  void move_extruder_stepper(const uint8_t e);
+#endif
+
 #if ENABLED(SWITCHING_NOZZLE)
   #if SWITCHING_NOZZLE_TWO_SERVOS
     void lower_nozzle(const uint8_t e);

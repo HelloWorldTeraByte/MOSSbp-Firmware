@@ -85,6 +85,28 @@
   #include "../feature/pause.h"
 #endif
 
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  extern xyze_pos_t destination;
+
+  void move_extruder_stepper(const uint8_t e) {
+      planner.synchronize();
+      //SERIAL_ECHOPGM("Tool Changing.. to ");
+      //SERIAL_ECHO(e);
+      //SERIAL_EOL();
+
+      //current_position.e = destination.e;
+      //planner.set_e_position_mm(current_position.e);
+
+      destination.e = 10;
+      planner.buffer_segment(destination, 12,1);
+
+//      SERIAL_ECHOPGM("Current Position");
+//      SERIAL_ECHO(planner.get_axis_position_mm(E1_AXIS));
+//      SERIAL_EOL();
+  }
+#endif // DRUM_SWITCHING_EXTRUDER
+
+
 #if DO_SWITCH_EXTRUDER
 
   #if EXTRUDERS > 3
@@ -805,6 +827,11 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
     return;
 
   #else // EXTRUDERS > 1
+
+    #if ENABLED(DRUM_SWITCHING_EXTRUDER)
+        move_extruder_stepper(new_tool);
+        return;
+    #endif
 
     planner.synchronize();
 

@@ -144,13 +144,13 @@
 
 // This defines the number of extruders
 // :[1, 2, 3, 4, 5, 6]
-#define EXTRUDERS 1
+#define EXTRUDERS 2
 
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
 
 // For Cyclops or any "multi-extruder" that shares a single nozzle.
-//#define SINGLENOZZLE
+#define SINGLENOZZLE
 
 /**
  * Průša MK2 Single Nozzle Multi-Material Multiplexer, and variants.
@@ -190,6 +190,15 @@
     #define SWITCHING_EXTRUDER_E23_SERVO_NR 1
   #endif
 #endif
+
+// A single nozzle rotating material extruder. E0 is used as the extrusion motor
+// and E1 as the switcher between materials
+#define DRUM_SWITCHING_EXTRUDER
+#if ENABLED(SWITCHING_EXTRUDER)
+  #define DRUM_SWITCHING_STEPPER 1
+  #define DRUM_SWITCHING_EXTRUDER_ANGLES { 0, 120, 240 } // Angles for E0, E1[, E2, E3]
+#endif
+
 
 // A dual-nozzle that uses a servomotor to raise/lower one (or both) of the nozzles
 //#define SWITCHING_NOZZLE
@@ -552,7 +561,8 @@
  *
  * *** IT IS HIGHLY RECOMMENDED TO LEAVE THIS OPTION ENABLED! ***
  */
-#define PREVENT_COLD_EXTRUSION
+//TODO: Turn this on in the final version, this is just for testing
+//#define PREVENT_COLD_EXTRUSION
 #define EXTRUDE_MINTEMP 170
 
 /**
@@ -672,7 +682,7 @@
 //#define Z2_DRIVER_TYPE A4988
 //#define Z3_DRIVER_TYPE A4988
 #define E0_DRIVER_TYPE TMC2130
-//#define E1_DRIVER_TYPE TMC2130
+#define E1_DRIVER_TYPE TMC2130
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
