@@ -45,12 +45,6 @@
   void move_extruder_servo(const uint8_t e);
 #endif
 
-#if ENABLED(DRUM_SWITCHING_EXTRUDER)
-  void drum_switcher_init();
-  void drum_rotate(float degrees);
-  void drum_tool_change(const uint8_t e);
-#endif
-
 #if ENABLED(SWITCHING_NOZZLE)
   #if SWITCHING_NOZZLE_TWO_SERVOS
     void lower_nozzle(const uint8_t e);
@@ -101,6 +95,12 @@
 
 #if ENABLED(ELECTROMAGNETIC_SWITCHING_TOOLHEAD)
   void est_init();
+#endif
+
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  void drum_switcher_init();
+  void drum_rotate(float degrees);
+  void drum_tool_change(const uint8_t e);
 #endif
 
 /**

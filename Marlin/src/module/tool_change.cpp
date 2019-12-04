@@ -90,73 +90,6 @@
   #include "../gcode/queue.h"
 #endif
 
-#if ENABLED(DRUM_SWITCHING_EXTRUDER)
-  float drum_rot = 0;
-
-  void drum_switcher_init() {
-    active_extruder = DRUM_SWITCHING_STEPPER;
-    queue.enqueue_one_now("G92 E0");
-    active_extruder = 0;
-  }
-
-  //TODO: Move this to somewhere else
-  float wrap_angle(float angle){
-    angle = fmod(angle, 360);
-    if (angle < 0)
-        angle += 360;
-    return angle;
-  }
-
-  void drum_rotate(float degrees) {
-    active_extruder = DRUM_SWITCHING_STEPPER;
-    current_position.e -= degrees*((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER))/360.0)*(DRUM_SWITCHING_DRUM_R/DRUM_SWITCHING_PULLEY_R);
-    drum_rot = wrap_angle(drum_rot + degrees);
-    planner.buffer_line(current_position, DRUM_SWITCHING_SPEED, DRUM_SWITCHING_STEPPER);
-    planner.synchronize();
-    active_extruder = 0;
-  }
-
-  void drum_switcher_tool_change(const uint8_t new_tool) {
-      planner.synchronize();
-
-      switch (new_tool) {
-      case 0:
-        break;
-      case 1:
-        drum_rotate(90);
-        break;
-      case 2:
-        drum_rotate(180);
-        break;
-      case 3:
-        drum_rotate(270);
-        break;
-      case 4:
-        drum_rotate(360);
-        break;
-      case 5:
-        drum_rotate(-90);
-        break;
-      case 6:
-        drum_rotate(-180);
-        break;
-      case 7:
-        drum_rotate(-270);
-        break;
-      case 8:
-        drum_rotate(-360);
-        break;
-      default:
-        break;
-      }
-
-      SERIAL_ECHOPGM("Drum rotation ");
-      SERIAL_ECHO(drum_rot);
-      SERIAL_EOL();
-  }
-#endif // DRUM_SWITCHING_EXTRUDER
-
-
 #if DO_SWITCH_EXTRUDER
 
   #if EXTRUDERS > 3
@@ -835,6 +768,59 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
   }
 
 #endif // DUAL_X_CARRIAGE
+
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  float drum_rot = 0.0f;
+  uint8_t old_tool = 0;
+
+  //TODO: Move this to somewhere else
+  float wrap_angle(float angle){
+    angle = fmod(angle, 360);
+    if (angle < 0)
+        angle += 360;
+    return angle;
+  }
+
+  void drum_switcher_init() {
+    active_extruder = DRUM_SWITCHING_STEPPER;
+    queue.enqueue_one_now("G92 E0");
+    active_extruder = 0;
+  }
+
+  void drum_rotate(float degrees) {
+    active_extruder = DRUM_SWITCHING_STEPPER;
+    current_position.e += degrees*((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER))/360.0)*(DRUM_SWITCHING_DRUM_R/DRUM_SWITCHING_PULLEY_R);
+    drum_rot = wrap_angle(drum_rot + degrees);
+    planner.buffer_line(current_position, DRUM_SWITCHING_SPEED, DRUM_SWITCHING_STEPPER);
+    planner.synchronize();
+    active_extruder = 0;
+  }
+
+  void drum_switcher_tool_change(const uint8_t new_tool) {
+      planner.synchronize();
+
+      if (new_tool >= DRUM_SWITCHING_N_MATERIALS)
+        return invalid_extruder_error(new_tool);
+
+      if(new_tool != old_tool) {
+        float rot;
+        rot = (old_tool - new_tool)*(360.0/DRUM_SWITCHING_N_MATERIALS);
+        if(abs(rot) > 180) {
+          if((new_tool - old_tool) > 0) {
+            rot = rot + 360;
+          } else {
+            rot = rot - 360;
+          }
+        }
+        drum_rotate(rot);
+        old_tool = new_tool;
+      }
+      //SERIAL_ECHOPGM("Drum rotation ");
+      //SERIAL_ECHO(drum_rot);
+      //SERIAL_EOL();
+  }
+#endif // DRUM_SWITCHING_EXTRUDER
+
 
 /**
  * Perform a tool-change, which may result in moving the
