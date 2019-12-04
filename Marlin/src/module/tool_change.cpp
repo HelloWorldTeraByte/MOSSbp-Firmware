@@ -86,23 +86,72 @@
 #endif
 
 #if ENABLED(DRUM_SWITCHING_EXTRUDER)
-  extern xyze_pos_t destination;
+  #include "stepper.h"
+  #include "../gcode/queue.h"
+#endif
 
-  void move_extruder_stepper(const uint8_t e) {
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  float drum_rot = 0;
+
+  void drum_switcher_init() {
+    active_extruder = DRUM_SWITCHING_STEPPER;
+    queue.enqueue_one_now("G92 E0");
+    active_extruder = 0;
+  }
+
+  //TODO: Move this to somewhere else
+  float wrap_angle(float angle){
+    angle = fmod(angle,360);
+    if (angle < 0)
+        angle += 360;
+    return angle;
+  }
+
+  void drum_rotate(float degrees) {
+    active_extruder = DRUM_SWITCHING_STEPPER;
+    current_position.e += degrees*((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER))/360.0);
+    planner.buffer_line(current_position, DRUM_SWITCHING_SPEED, DRUM_SWITCHING_STEPPER);
+    planner.synchronize();
+    active_extruder = 0;
+  }
+
+  void drum_switcher_tool_change(const uint8_t new_tool) {
       planner.synchronize();
-      //SERIAL_ECHOPGM("Tool Changing.. to ");
-      //SERIAL_ECHO(e);
-      //SERIAL_EOL();
 
-      //current_position.e = destination.e;
-      //planner.set_e_position_mm(current_position.e);
+      switch (new_tool) {
+      case 0:
+        break;
+      case 1:
+        drum_rotate(90);
+        break;
+      case 2:
+        drum_rotate(180);
+        break;
+      case 3:
+        drum_rotate(270);
+        break;
+      case 4:
+        drum_rotate(360);
+        break;
+      case 5:
+        drum_rotate(-90);
+        break;
+      case 6:
+        drum_rotate(-180);
+        break;
+      case 7:
+        drum_rotate(-270);
+        break;
+      case 8:
+        drum_rotate(-360);
+        break;
+      default:
+        break;
+      }
 
-      destination.e = 10;
-      planner.buffer_segment(destination, 12,1);
-
-//      SERIAL_ECHOPGM("Current Position");
-//      SERIAL_ECHO(planner.get_axis_position_mm(E1_AXIS));
-//      SERIAL_EOL();
+      SERIAL_ECHOPGM("Stepper Position ");
+      SERIAL_ECHO(stepper.position(E1_AXIS));
+      SERIAL_EOL();
   }
 #endif // DRUM_SWITCHING_EXTRUDER
 
@@ -829,7 +878,7 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
   #else // EXTRUDERS > 1
 
     #if ENABLED(DRUM_SWITCHING_EXTRUDER)
-        move_extruder_stepper(new_tool);
+        drum_switcher_tool_change(new_tool);
         return;
     #endif
 

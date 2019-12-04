@@ -46,7 +46,9 @@
 #endif
 
 #if ENABLED(DRUM_SWITCHING_EXTRUDER)
-  void move_extruder_stepper(const uint8_t e);
+  void drum_switcher_init();
+  void drum_rotate(float degrees);
+  void drum_tool_change(const uint8_t e);
 #endif
 
 #if ENABLED(SWITCHING_NOZZLE)
