@@ -821,7 +821,6 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
   }
 #endif // DRUM_SWITCHING_EXTRUDER
 
-
 /**
  * Perform a tool-change, which may result in moving the
  * previous tool out of the way and the new tool into place.
