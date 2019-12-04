@@ -177,6 +177,11 @@
   #include "feature/prusa_MMU2/mmu2.h"
 #endif
 
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  #include "module/tool_change.h"
+#endif
+
+
 #if HAS_DRIVER(L6470)
   #include "libs/L6470/L6470_Marlin.h"
 #endif
@@ -1112,6 +1117,10 @@ void setup() {
 
   #if ENABLED(PRUSA_MMU2)
     mmu2.init();
+  #endif
+
+  #if ENABLED(DRUM_SWITCHING_EXTRUDER)
+    drum_switcher_init();
   #endif
 }
 
