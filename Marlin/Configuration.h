@@ -196,10 +196,10 @@
 #define DRUM_SWITCHING_EXTRUDER
 #if ENABLED(DRUM_SWITCHING_EXTRUDER)
   #define DRUM_SWITCHING_N_MATERIALS 3 //Number of materials in the drum
-  #define DRUM_SWITCHING_PULLEY_R 11 
-  #define DRUM_SWITCHING_DRUM_R 40
+  #define DRUM_SWITCHING_PULLEY_R 11.0
+  #define DRUM_SWITCHING_DRUM_R 40.0
   #define DRUM_SWITCHING_STEPPER 1    // Use E1 as the switching extruder
-  #define DRUM_SWITCHING_SPEED 5
+  #define DRUM_SWITCHING_SPEED 10
 #endif
 
 

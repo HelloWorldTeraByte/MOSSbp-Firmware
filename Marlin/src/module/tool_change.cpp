@@ -101,7 +101,7 @@
 
   //TODO: Move this to somewhere else
   float wrap_angle(float angle){
-    angle = fmod(angle,360);
+    angle = fmod(angle, 360);
     if (angle < 0)
         angle += 360;
     return angle;
@@ -109,7 +109,8 @@
 
   void drum_rotate(float degrees) {
     active_extruder = DRUM_SWITCHING_STEPPER;
-    current_position.e += degrees*((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER))/360.0);
+    current_position.e -= degrees*((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER))/360.0)*(DRUM_SWITCHING_DRUM_R/DRUM_SWITCHING_PULLEY_R);
+    drum_rot = wrap_angle(drum_rot + degrees);
     planner.buffer_line(current_position, DRUM_SWITCHING_SPEED, DRUM_SWITCHING_STEPPER);
     planner.synchronize();
     active_extruder = 0;
@@ -149,8 +150,8 @@
         break;
       }
 
-      SERIAL_ECHOPGM("Stepper Position ");
-      SERIAL_ECHO(stepper.position(E1_AXIS));
+      SERIAL_ECHOPGM("Drum rotation ");
+      SERIAL_ECHO(drum_rot);
       SERIAL_EOL();
   }
 #endif // DRUM_SWITCHING_EXTRUDER
