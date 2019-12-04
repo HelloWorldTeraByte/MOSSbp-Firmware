@@ -194,9 +194,12 @@
 // A single nozzle rotating material extruder. E0 is used as the extrusion motor
 // and E1 as the switcher between materials
 #define DRUM_SWITCHING_EXTRUDER
-#if ENABLED(SWITCHING_EXTRUDER)
-  #define DRUM_SWITCHING_STEPPER 1
-  #define DRUM_SWITCHING_EXTRUDER_ANGLES { 0, 120, 240 } // Angles for E0, E1[, E2, E3]
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  #define DRUM_SWITCHING_N_MATERIALS 3 //Number of materials in the drum
+  #define DRUM_SWITCHING_PULLEY_R 11 
+  #define DRUM_SWITCHING_DRUM_R 40
+  #define DRUM_SWITCHING_STEPPER 1    // Use E1 as the switching extruder
+  #define DRUM_SWITCHING_SPEED 5
 #endif
 
 
@@ -711,6 +714,11 @@
 //=============================================================================
 // @section motion
 
+// Used for calculating the both steps per unit and angle for rotations
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  #define DRUM_SWITCHING_EXTRUDER_MULTIPLIER 6.0
+#endif
+
 /**
  * Default Settings
  *
@@ -724,14 +732,16 @@
  * following movement settings. If fewer factors are given than the
  * total number of extruders, the last value applies to the rest.
  */
-//#define DISTINCT_E_FACTORS
+#define DISTINCT_E_FACTORS
 
 /**
  * Default Axis Steps Per Unit (steps/mm)
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
+ * For the drum switching extruder the steps per unit is: 6400/2^DRUM_SWITCHING_EXTRUDER_MULTIPLIER
+ * Where 6400 is steps for each rotation*microsteping
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 93 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 6400, 100 }
 
 /**
  * Default Max Feed Rate (mm/s)
