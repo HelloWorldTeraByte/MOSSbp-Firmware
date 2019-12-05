@@ -192,14 +192,15 @@
 #endif
 
 // A single nozzle rotating material extruder. E0 is used as the extrusion motor
-// and E1 as the switcher between materials
 #define DRUM_SWITCHING_EXTRUDER
 #if ENABLED(DRUM_SWITCHING_EXTRUDER)
-  #define DRUM_SWITCHING_N_MATERIALS 3 //Number of materials in the drum
-  #define DRUM_SWITCHING_PULLEY_R 1
-  #define DRUM_SWITCHING_DRUM_R 1
+  #define DRUM_N_MATERIALS 3          // Number of materials in the drum
   #define DRUM_SWITCHING_STEPPER 1    // Use E1 as the switching extruder
-  #define DRUM_SWITCHING_SPEED 10
+  #define DRUM_SWITCHING_SPEED 10     // The rotation speed of the drum
+  #define DRUM_SWITCHING_PULLEY_R 1   // Radius of the pulley driven by the stepper
+  #define DRUM_SWITCHING_DRUM_R 1     // Radius of the drum
+  #define DRUM_EXTRUDER_SPEED 10      // Spped of the extruder 
+  #define DRUM_EXTRUDER_OFFSET 5.0    // Maximum height of the extruder is zero, this offset is the start of the plunger
 #endif
 
 
@@ -1050,7 +1051,7 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR true
+#define INVERT_E0_DIR false
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
