@@ -799,9 +799,6 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
   }
 
   void drum_rotate(float degrees) {
-    //e1_pos += degrees * ((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER)) / 360.0) * (DRUM_SWITCHING_DRUM_R / DRUM_SWITCHING_PULLEY_R);
-    //current_position.e = e1_pos;
-    //e1_pos = current_position.e;
     active_extruder = DRUM_SWITCHING_STEPPER;
     drum_rot = wrap_angle(drum_rot + degrees);
     current_position.e = 0;
@@ -828,14 +825,14 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
     }
 
     if (new_tool != curr_tool) {
+      // Step 1: Go back up to the zero position
       active_extruder = 0;
       extruder_loc[curr_tool] = planner.get_axis_position_mm(E0_AXIS);
       current_position.e = 0;
       planner.buffer_line(current_position, DRUM_EXTRUDER_SPEED, 0);
       planner.synchronize();
 
-      float rot;
-      rot = (curr_tool - new_tool) * (360.0 / DRUM_N_MATERIALS);
+      float rot = (curr_tool - new_tool) * (360.0 / DRUM_N_MATERIALS);
       if (abs(rot) > 180) {
         if ((new_tool - curr_tool) > 0) {
           rot += 360;
@@ -843,9 +840,12 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
           rot -= 360;
         }
       }
+
+      // Step 2: Rotate the drum and wait a bit
       drum_rotate(rot);
       safe_delay(500);
 
+      // Step 3: Go to the saved new tool's position
       active_extruder = 0;
       current_position.e = 0;
       sync_plan_position_e();
