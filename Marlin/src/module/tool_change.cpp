@@ -770,11 +770,13 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
 #endif // DUAL_X_CARRIAGE
 
 #if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  uint8_t curr_tool = 0;
   float drum_rot = 0.0f;
-  uint8_t old_tool = 0;
+  float e1_pos = 0.0f;
+  float extruder_loc[DRUM_N_MATERIALS] = {0};
 
   //TODO: Move this to somewhere else
-  float wrap_angle(float angle){
+  float wrap_angle(float angle) {
     angle = fmod(angle, 360);
     if (angle < 0)
         angle += 360;
@@ -782,42 +784,77 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
   }
 
   void drum_switcher_init() {
-    active_extruder = DRUM_SWITCHING_STEPPER;
-    queue.enqueue_one_now("G92 E0");
+    //TODO: Might not need this
     active_extruder = 0;
+    current_position.e = 0;
+    sync_plan_position_e();
+    active_extruder = DRUM_SWITCHING_STEPPER;
+    current_position.e = 0;
+    sync_plan_position_e();
+
+    // The plungers start at the offset and not at zero
+    for(int i = 0; i < DRUM_N_MATERIALS; i++) {
+      extruder_loc[i] = DRUM_EXTRUDER_OFFSET;
+    }
   }
 
   void drum_rotate(float degrees) {
+    //e1_pos += degrees * ((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER)) / 360.0) * (DRUM_SWITCHING_DRUM_R / DRUM_SWITCHING_PULLEY_R);
+    //current_position.e = e1_pos;
+    //e1_pos = current_position.e;
     active_extruder = DRUM_SWITCHING_STEPPER;
-    current_position.e += degrees*((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER))/360.0)*(DRUM_SWITCHING_DRUM_R/DRUM_SWITCHING_PULLEY_R);
     drum_rot = wrap_angle(drum_rot + degrees);
+    current_position.e = 0;
+    sync_plan_position_e();
+    current_position.e = degrees * ((pow(2, DRUM_SWITCHING_EXTRUDER_MULTIPLIER)) / 360.0) * (DRUM_SWITCHING_DRUM_R / DRUM_SWITCHING_PULLEY_R);
     planner.buffer_line(current_position, DRUM_SWITCHING_SPEED, DRUM_SWITCHING_STEPPER);
     planner.synchronize();
     active_extruder = 0;
   }
 
   void drum_switcher_tool_change(const uint8_t new_tool) {
+    planner.synchronize();          // Wait for any already queued movement
+
+    // Make sure the drum has the specified new material
+    if (new_tool >= DRUM_N_MATERIALS)
+      return invalid_extruder_error(new_tool);
+
+    // At the start move the extruder to the top of the plunger of the syringe
+    if (planner.get_axis_position_mm(E0_AXIS) < DRUM_EXTRUDER_OFFSET) {
+      active_extruder = 0;
+      current_position.e = DRUM_EXTRUDER_OFFSET;
+      planner.buffer_line(current_position, DRUM_EXTRUDER_SPEED, 0);
+      planner.synchronize();
+    }
+
+    if (new_tool != curr_tool) {
+      active_extruder = 0;
+      extruder_loc[curr_tool] = planner.get_axis_position_mm(E0_AXIS);
+      current_position.e = 0;
+      planner.buffer_line(current_position, DRUM_EXTRUDER_SPEED, 0);
       planner.synchronize();
 
-      if (new_tool >= DRUM_SWITCHING_N_MATERIALS)
-        return invalid_extruder_error(new_tool);
-
-      if(new_tool != old_tool) {
-        float rot;
-        rot = (old_tool - new_tool)*(360.0/DRUM_SWITCHING_N_MATERIALS);
-        if(abs(rot) > 180) {
-          if((new_tool - old_tool) > 0) {
-            rot = rot + 360;
-          } else {
-            rot = rot - 360;
-          }
+      float rot;
+      rot = (curr_tool - new_tool) * (360.0 / DRUM_N_MATERIALS);
+      if (abs(rot) > 180) {
+        if ((new_tool - curr_tool) > 0) {
+          rot += 360;
+        } else {
+          rot -= 360;
         }
-        drum_rotate(rot);
-        old_tool = new_tool;
       }
-      //SERIAL_ECHOPGM("Drum rotation ");
-      //SERIAL_ECHO(drum_rot);
-      //SERIAL_EOL();
+      drum_rotate(rot);
+      safe_delay(500);
+
+      active_extruder = 0;
+      current_position.e = 0;
+      sync_plan_position_e();
+      current_position.e = extruder_loc[new_tool];
+      planner.buffer_line(current_position, DRUM_EXTRUDER_SPEED, 0);
+      planner.synchronize();
+
+      curr_tool = new_tool;
+    }
   }
 #endif // DRUM_SWITCHING_EXTRUDER
 
