@@ -469,13 +469,9 @@
 #define HEATER_3_MAXTEMP 275
 #define HEATER_4_MAXTEMP 275
 #define HEATER_5_MAXTEMP 275
-<<<<<<< HEAD
-#define BED_MAXTEMP      125
-=======
 #define HEATER_6_MAXTEMP 275
 #define HEATER_7_MAXTEMP 275
 #define BED_MAXTEMP      150
->>>>>>> upstream/bugfix-2.0.x
 
 //===========================================================================
 //============================= PID Settings ================================
@@ -699,14 +695,8 @@
 //#define Y2_DRIVER_TYPE A4988
 //#define Z2_DRIVER_TYPE A4988
 //#define Z3_DRIVER_TYPE A4988
-<<<<<<< HEAD
 #define E0_DRIVER_TYPE TMC2130
 #define E1_DRIVER_TYPE TMC2130
-=======
-//#define Z4_DRIVER_TYPE A4988
-//#define E0_DRIVER_TYPE A4988
-//#define E1_DRIVER_TYPE A4988
->>>>>>> upstream/bugfix-2.0.x
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988

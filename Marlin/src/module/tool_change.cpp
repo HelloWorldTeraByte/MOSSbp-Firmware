@@ -841,9 +841,7 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
       }
 
       // Step 2: Rotate the drum and wait a bit
-      safe_delay(2000);
       drum_rotate(rot);
-      safe_delay(2000);
 
       // Step 3: Go to the saved new tool's position
       active_extruder = 0;

@@ -177,18 +177,12 @@
   #include "feature/prusa_MMU2/mmu2.h"
 #endif
 
-<<<<<<< HEAD:Marlin/src/Marlin.cpp
-#if ENABLED(DRUM_SWITCHING_EXTRUDER)
-  #include "module/tool_change.h"
-#endif
-
-
-#if HAS_DRIVER(L6470)
-  #include "libs/L6470/L6470_Marlin.h"
-=======
 #if HAS_L64XX
   #include "libs/L64XX/L64XX_Marlin.h"
->>>>>>> upstream/bugfix-2.0.x:Marlin/src/MarlinCore.cpp
+#endif
+
+#if ENABLED(DRUM_SWITCHING_EXTRUDER)
+  #include "module/tool_change.h"
 #endif
 
 const char NUL_STR[] PROGMEM = "",
