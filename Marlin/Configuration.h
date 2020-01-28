@@ -130,7 +130,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_14_RE_ARM_EFB
+  #define MOTHERBOARD BOARD_BIGTREE_SKR_V1_3
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -197,8 +197,8 @@
   #define DRUM_N_MATERIALS 3          // Number of materials in the drum
   #define DRUM_SWITCHING_STEPPER 1    // Use E1 as the switching extruder
   #define DRUM_SWITCHING_SPEED 10     // The rotation speed of the drum
-  #define DRUM_SWITCHING_PULLEY_R 1   // Radius of the pulley driven by the stepper
-  #define DRUM_SWITCHING_DRUM_R 1     // Radius of the drum
+  #define DRUM_SWITCHING_PULLEY_R 11.2   // Radius of the pulley driven by the stepper
+  #define DRUM_SWITCHING_DRUM_R 24.4   // Radius of the drum
   #define DRUM_EXTRUDER_SPEED 10      // Spped of the extruder 
   #define DRUM_EXTRUDER_OFFSET 5.0    // Maximum height of the extruder is zero, this offset is the start of the plunger
 #endif
@@ -418,7 +418,7 @@
  *   998 : Dummy Table that ALWAYS reads 25°C or the temperature defined below.
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  */
-#define TEMP_SENSOR_0 1
+#define TEMP_SENSOR_0 998
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -1636,7 +1636,7 @@
 #define LCD_INFO_SCREEN_STYLE 0
 
 /**
- * SD CARD
+ * SD CARD/
  *
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.

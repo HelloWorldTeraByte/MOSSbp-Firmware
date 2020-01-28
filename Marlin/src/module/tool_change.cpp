@@ -772,7 +772,6 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
 #if ENABLED(DRUM_SWITCHING_EXTRUDER)
   uint8_t curr_tool = 0;
   float drum_rot = 0.0f;
-  float e1_pos = 0.0f;
   float extruder_loc[DRUM_N_MATERIALS] = {0};
 
   //TODO: Move this to somewhere else
@@ -842,8 +841,9 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
       }
 
       // Step 2: Rotate the drum and wait a bit
+      safe_delay(2000);
       drum_rotate(rot);
-      safe_delay(500);
+      safe_delay(2000);
 
       // Step 3: Go to the saved new tool's position
       active_extruder = 0;
@@ -854,6 +854,11 @@ inline void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_a
       planner.synchronize();
 
       curr_tool = new_tool;
+
+      SERIAL_ECHOPAIR("T0 pos: ", extruder_loc[0]);
+      SERIAL_ECHOPAIR("T1 pos: ", extruder_loc[1]);
+      SERIAL_ECHOPAIR("T2 pos: ", extruder_loc[2]);
+      SERIAL_ECHOPAIR(" ", 0);
     }
   }
 #endif // DRUM_SWITCHING_EXTRUDER
