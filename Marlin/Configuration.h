@@ -196,10 +196,10 @@
 #if ENABLED(DRUM_SWITCHING_EXTRUDER)
   #define DRUM_N_MATERIALS 3          // Number of materials in the drum
   #define DRUM_SWITCHING_STEPPER 1    // Use E1 as the switching extruder
-  #define DRUM_SWITCHING_SPEED 10     // The rotation speed of the drum
+  #define DRUM_SWITCHING_SPEED 15     // The rotation speed of the drum
   #define DRUM_SWITCHING_PULLEY_R 11.2   // Radius of the pulley driven by the stepper
   #define DRUM_SWITCHING_DRUM_R 24.4   // Radius of the drum
-  #define DRUM_EXTRUDER_SPEED 10      // Spped of the extruder 
+  #define DRUM_EXTRUDER_SPEED 3      // Speed of the extruder 
   #define DRUM_EXTRUDER_OFFSET 5.0    // Maximum height of the extruder is zero, this offset is the start of the plunger
 #endif
 
@@ -762,7 +762,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 500, 500, 5, 25 }
+#define DEFAULT_MAX_FEEDRATE          { 500, 500, 5, DRUM_EXTRUDER_SPEED, DRUM_SWITCHING_SPEED}
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
